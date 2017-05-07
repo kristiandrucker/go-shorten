@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"time"
 	"flag"
+	"fmt"
 )
 
 type Template struct {
@@ -30,6 +31,9 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 }
 
 func main() {
+	fmt.Println("Going to sleep for 30s. Wait for db to start.")
+	time.Sleep(time.Duration(time.Second * 30))
+	fmt.Println("Going to start the app.")
 	r = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	db, _ := gorm.Open("mysql", "root@/go-shorten")
