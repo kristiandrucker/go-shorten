@@ -1,0 +1,76 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: go-shorten
+  labels:
+    app: go-shorten
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-shorten
+  template:
+    metadata:
+      labels:
+        app: go-shorten
+    spec:
+      containers:
+      - name: go-shorten
+        image: oxkipo/go-shorten
+        resources:
+          requests:
+            cpu: 100m
+            memory: 50Mi
+          limits:
+            cpu: 100m
+            memory: 50Mi
+        args:
+        - ./go-shorten
+        - --hostname
+        - go-shorten.dkristian.co
+        ports:
+        - containerPort: 1323
+      - name: go-shorten-db
+        image: mariadb
+        resources:
+          requests:
+            cpu: 100m
+            memory: 50Mi
+          limits:
+            cpu: 100m
+            memory: 200Mi
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value:
+          - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            value: "true"
+          - name: MYSQL_DATABASE
+            value: go-shorten
+        ports:
+        - containerPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-shorten
+spec:
+  ports:
+  - name: http
+    targetPort: 1323
+    port: 80
+  selector:
+    app: go-shorten
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: go-shorten
+spec:
+  rules:
+  - host: go-shorten.dkristian.co
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: go-shorten
+          servicePort: http

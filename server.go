@@ -31,8 +31,9 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 }
 
 func main() {
+	flag.Parse()
 	fmt.Println("Going to sleep for 30s. Wait for db to start.")
-	time.Sleep(time.Duration(time.Second * 30))
+	//time.Sleep(time.Duration(time.Second * 30))
 	fmt.Println("Going to start the app.")
 	r = rand.New(rand.NewSource(time.Now().UnixNano()))
 
@@ -66,7 +67,9 @@ func submit(c echo.Context) error {
 		db.First(&url)
 	}
 	db.Close()
-	return c.Render(http.StatusOK, "index", *hostname+":1323/u/"+url.Code)
+	fmt.Println(hostname)
+	fmt.Println(*hostname)
+	return c.Render(http.StatusOK, "index", *hostname+"/u/"+url.Code)
 }
 
 func getUrl(c echo.Context) error {
