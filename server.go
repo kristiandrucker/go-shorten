@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"net/http"
 	"time"
+	"flag"
 )
 
 type Template struct {
@@ -19,6 +20,8 @@ type Url struct {
 	LongUrl string
 	Code string
 }
+
+var hostname = flag.String("hostname", "localhost", "Hostname for URLs")
 
 var r *rand.Rand
 
@@ -59,7 +62,7 @@ func submit(c echo.Context) error {
 		db.First(&url)
 	}
 	db.Close()
-	return c.Render(http.StatusOK, "index", "localhost:1323/u/"+url.Code)
+	return c.Render(http.StatusOK, "index", *hostname+":1323/u/"+url.Code)
 }
 
 func getUrl(c echo.Context) error {
